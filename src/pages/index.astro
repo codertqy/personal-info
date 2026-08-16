@@ -1,25 +1,30 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ArticleRow from '@/components/ArticleRow.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
-import { projects } from '@/data/projects';
 import { siteConfig } from '@/config/site';
 
 const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
   .slice(0, 3);
-const featuredProject = projects[0];
+const noteEntries = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+  .slice(0, 3);
+const notes = await Promise.all(noteEntries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })));
+const formatNoteDate = (date: Date) => new Intl.DateTimeFormat('zh-CN', { month: '2-digit', day: '2-digit' }).format(date).replace('/', '.');
 ---
 
 <BaseLayout>
   <section class="hero shell">
+    <figure class="hero__image">
+      <img src="/images/hero-editorial.webp" alt="暖色自然光下的书籍、陶杯、纸张和玻璃花瓶" width="1122" height="1402" fetchpriority="high" />
+      <figcaption><span>DEV NOTES</span><span>01 — 持续记录</span></figcaption>
+    </figure>
     <div class="hero__copy">
-      <h1 aria-label={`你好，我是${siteConfig.wordmark}。`}>
-        <span>你好，我是</span>
-        <span class="hero__name">{siteConfig.wordmark}。</span>
-      </h1>
+      <p class="hero__kicker">天气又不好 · 开发与生活记录</p>
+      <h1>把问题写下来，<span>也把答案留下来。</span></h1>
       <span class="hero__rule" aria-hidden="true"></span>
       <p class="hero__intro">{siteConfig.description}</p>
       <a class="hero__cta text-link" href="/articles/">阅读最新文章 <span aria-hidden="true">→</span></a>
@@ -28,9 +33,6 @@ const featuredProject = projects[0];
       <span>{siteConfig.motto}</span>
       <Icon name="ph:seal-check" size={24} />
     </div>
-    <figure class="hero__image">
-      <img src="/images/hero-editorial.webp" alt="暖色自然光下的书籍、陶杯、纸张和玻璃花瓶" width="1122" height="1402" fetchpriority="high" />
-    </figure>
   </section>
 
   <section class="home-section shell" data-reveal>
@@ -51,19 +53,20 @@ const featuredProject = projects[0];
     </div>
   </section>
 
-  <section class="home-section project-section shell" data-reveal>
-    <SectionHeading title="精选项目" href="/projects/" linkLabel="查看全部项目" />
-    <article class="featured-project reveal-children">
-      <img src={featuredProject.image} alt={featuredProject.imageAlt} width="1536" height="1024" loading="lazy" />
-      <div>
-        <p class="eyebrow">{featuredProject.status}</p>
-        <h3>{featuredProject.title}</h3>
-        <p>{featuredProject.description}</p>
-        <ul aria-label="项目标签">
-          {featuredProject.tags.map((tag) => <li><span aria-hidden="true"></span>{tag}</li>)}
-        </ul>
-        <a class="text-link" href="/projects/">查看项目说明 <span aria-hidden="true">→</span></a>
-      </div>
-    </article>
+  <section class="home-section notes-section shell" data-reveal>
+    <SectionHeading title="最近日常" href="/notes/" linkLabel="查看全部记录" />
+    <div class="note-grid reveal-children">
+      {notes.map(({ entry, Content }) => (
+        <article class="note-card">
+          <div class="note-card__meta">
+            <time datetime={entry.data.published.toISOString()}>{formatNoteDate(entry.data.published)}</time>
+            <span>{entry.data.mood}</span>
+          </div>
+          <h3>{entry.data.title}</h3>
+          <div class="note-card__body"><Content /></div>
+          <ul aria-label="记录标签">{entry.data.tags.map((tag) => <li>#{tag}</li>)}</ul>
+        </article>
+      ))}
+    </div>
   </section>
 </BaseLayout>

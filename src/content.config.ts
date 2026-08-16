@@ -8,7 +8,7 @@ const articles = defineCollection({
     title: z.string(),
     description: z.string(),
     published: z.coerce.date(),
-    updated: z.coerce.date().optional(),
+    updated: z.preprocess((value) => value === '' ? undefined : value, z.coerce.date().optional()),
     category: z.string(),
     tags: z.array(z.string()).default([]),
     image: z.string(),
@@ -20,4 +20,15 @@ const articles = defineCollection({
   }),
 });
 
-export const collections = { articles };
+const notes = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/notes' }),
+  schema: z.object({
+    title: z.string(),
+    published: z.coerce.date(),
+    mood: z.string().default('日常'),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { articles, notes };

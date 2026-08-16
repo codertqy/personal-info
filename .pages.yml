@@ -1,0 +1,144 @@
+media:
+  input: public/images
+  output: /images
+  rename: safe
+  categories: [image]
+
+content:
+  - name: articles
+    label: 文章
+    type: collection
+    path: src/content/articles
+    format: yaml-frontmatter
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      fields: [title, published, category, draft]
+      primary: title
+      sort: [published, title]
+      search: [title, description, category, tags]
+      default:
+        sort: published
+        order: desc
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+      - name: description
+        label: 摘要
+        type: text
+        required: true
+        description: 显示在文章列表和搜索结果中。
+      - name: published
+        label: 发布日期
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: updated
+        label: 更新日期
+        type: date
+        default: ""
+        options:
+          format: yyyy-MM-dd
+      - name: category
+        label: 分类
+        type: string
+        required: true
+        default: 开发记录
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+      - name: image
+        label: 封面图片
+        type: image
+        required: true
+      - name: imageAlt
+        label: 图片说明
+        type: string
+        required: true
+        description: 用一句话描述图片，供无法查看图片的读者使用。
+      - name: draft
+        label: 保存为草稿
+        type: boolean
+        default: true
+      - name: featured
+        label: 推荐文章
+        type: boolean
+        default: false
+      - name: lang
+        label: 语言
+        type: string
+        default: zh-CN
+        hidden: true
+      - name: readingMinutes
+        label: 预计阅读分钟数
+        type: number
+        default: 5
+        required: true
+      - name: body
+        label: 正文
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          switcher: true
+
+  - name: notes
+    label: 日常
+    type: collection
+    path: src/content/notes
+    format: yaml-frontmatter
+    filename:
+      template: "{year}-{month}-{day}-{primary}.md"
+      field: create
+    view:
+      fields: [title, published, mood, draft]
+      primary: title
+      sort: [published, title]
+      search: [title, mood, tags]
+      default:
+        sort: published
+        order: desc
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+      - name: published
+        label: 日期
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: mood
+        label: 此刻状态
+        type: string
+        default: 日常
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+      - name: draft
+        label: 保存为草稿
+        type: boolean
+        default: false
+      - name: body
+        label: 内容
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          media: false
+
+settings:
+  commit:
+    identity: user
+    templates:
+      create: "content: 新增 {filename}"
+      update: "content: 更新 {filename}"
+      delete: "content: 删除 {filename}"
+      rename: "content: 重命名 {oldFilename} 为 {filename}"
