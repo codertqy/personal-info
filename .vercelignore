@@ -1,0 +1,11 @@
+.git/
+.astro/
+.npm-cache/
+.vercel/
+deliverables/
+dist/
+node_modules/
+tmp/
+tools/
+
+*.log

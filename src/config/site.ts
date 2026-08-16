@@ -11,7 +11,7 @@ export const siteConfig = {
   avatar: '/images/tx.webp',
   logo: '/images/logo-fang.png',
   locale: 'zh-CN',
-  url: 'https://example.com',
+  url: 'https://personal-info-opal.vercel.app',
   socialImage: '/images/hero-editorial.webp',
   commentsEnabled: false,
 } as const;

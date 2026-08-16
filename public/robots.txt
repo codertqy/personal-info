@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://example.com/sitemap-index.xml
-
-# TODO: 发布前将 example.com 替换为真实域名。
+Sitemap: https://personal-info-opal.vercel.app/sitemap-index.xml

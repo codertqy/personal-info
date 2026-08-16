@@ -24,7 +24,7 @@ npm run preview
 - `src/data/projects.ts`：真实项目、职责、描述、标签与链接。
 - `src/content/articles/`：中文 Markdown/MDX 文章与 front matter。
 - `public/images/`：首屏、文章封面、项目图与纸张纹理。
-- `astro.config.mjs` 与 `public/robots.txt`：发布前将 `example.com` 替换为真实域名。
+- `astro.config.mjs` 与 `public/robots.txt`：部署域名、Sitemap 与搜索引擎抓取配置。
 
 站点身份与个人博客项目已填写；`src/content/articles/` 中的文章仍为排版示例，发布前请替换为真实内容。
 

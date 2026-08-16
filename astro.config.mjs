@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
 
 export default defineConfig({
-  site: 'https://example.com', // TODO: 发布前替换为真实域名
+  site: 'https://personal-info-opal.vercel.app',
   integrations: [
     mdx(),
     sitemap(),
