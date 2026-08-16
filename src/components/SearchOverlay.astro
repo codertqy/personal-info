@@ -35,13 +35,17 @@ const searchIndex = articles.map((article) => ({
 
 <script is:inline define:vars={{ searchIndex }}>
   (() => {
+    const searchWindow = window;
     const normalize = (value) => String(value || '').toLocaleLowerCase('zh-CN').replace(/\s+/g, ' ').trim();
     const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
 
     const bindSearch = () => {
+      searchWindow.__blogSearchController?.abort();
+      const controller = new AbortController();
+      searchWindow.__blogSearchController = controller;
+      const { signal } = controller;
       const dialog = document.querySelector('[data-search-dialog]');
-      if (!dialog || dialog.dataset.bound) return;
-      dialog.dataset.bound = 'true';
+      if (!dialog) return;
       const input = dialog.querySelector('[data-search-input]');
       const results = dialog.querySelector('[data-search-results]');
       const summary = dialog.querySelector('[data-search-summary]');
@@ -87,23 +91,25 @@ const searchIndex = articles.map((article) => ({
         options[selected].scrollIntoView({ block: 'nearest' });
       };
 
-      document.querySelectorAll('[data-search-open]').forEach((button) => button.addEventListener('click', openSearch));
-      close.addEventListener('click', closeSearch);
-      clear.addEventListener('click', () => { input.value = ''; render(); input.focus(); });
-      input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(render, 120); });
-      dialog.addEventListener('cancel', (event) => { event.preventDefault(); closeSearch(); });
-      dialog.addEventListener('click', (event) => { if (event.target === dialog) closeSearch(); });
+      document.querySelectorAll('[data-search-open]').forEach((button) => button.addEventListener('click', openSearch, { signal }));
+      close.addEventListener('click', closeSearch, { signal });
+      clear.addEventListener('click', () => { input.value = ''; render(); input.focus(); }, { signal });
+      input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(render, 120); }, { signal });
+      dialog.addEventListener('cancel', (event) => { event.preventDefault(); closeSearch(); }, { signal });
+      dialog.addEventListener('click', (event) => { if (event.target === dialog) closeSearch(); }, { signal });
       dialog.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') { event.preventDefault(); closeSearch(); }
         if (event.key === 'ArrowDown') { event.preventDefault(); move(1); }
         if (event.key === 'ArrowUp') { event.preventDefault(); move(-1); }
         if (event.key === 'Enter' && selected >= 0) results.querySelector(`[data-result="${selected}"]`)?.click();
-      });
+      }, { signal });
       document.addEventListener('keydown', (event) => {
         const typing = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '') || document.activeElement?.isContentEditable;
         if (event.key === '/' && !typing && !dialog.open) { event.preventDefault(); openSearch(); }
-      });
+      }, { signal });
     };
+    if (searchWindow.__blogSearchPageLoad) document.removeEventListener('astro:page-load', searchWindow.__blogSearchPageLoad);
+    searchWindow.__blogSearchPageLoad = bindSearch;
     document.addEventListener('astro:page-load', bindSearch);
     bindSearch();
   })();

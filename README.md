@@ -31,6 +31,7 @@ npm run preview
 ## 已实现
 
 - 首页、文章归档、文章详情、分类、标签、日常、关于、内容管理入口。
+- 基于 GitHub Issues 的 Utterances 文章评论，支持跟随网站切换明暗主题。
 - 中文本地全文搜索、键盘选择与空状态。
 - 深色模式、移动菜单、粘性目录、阅读进度、代码复制。
 - RSS、Sitemap、robots、canonical、Open Graph 与 JSON-LD。

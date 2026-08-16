@@ -5,6 +5,10 @@ import icon from 'astro-icon';
 
 export default defineConfig({
   site: 'https://personal-info-opal.vercel.app',
+  prefetch: {
+    prefetchAll: false,
+    defaultStrategy: 'hover',
+  },
   integrations: [
     mdx(),
     sitemap(),

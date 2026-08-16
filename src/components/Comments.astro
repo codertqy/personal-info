@@ -1,0 +1,48 @@
+---
+import { siteConfig } from '@/config/site';
+---
+
+<section class="comments-section" aria-labelledby="comments-title" data-comments>
+  <header>
+    <p class="eyebrow">DISCUSSION · 交流</p>
+    <h2 id="comments-title">评论</h2>
+    <p>评论由 GitHub Issues 保存。登录 GitHub 后即可参与讨论。</p>
+  </header>
+  <div class="comments-mount" data-comments-mount data-repository={siteConfig.commentsRepository}></div>
+  <noscript>请启用 JavaScript 查看和发表 GitHub 评论。</noscript>
+</section>
+
+<script>
+  let commentsPath = '';
+
+  const commentsTheme = () => document.documentElement.dataset.theme === 'dark' ? 'github-dark' : 'github-light';
+
+  const mountComments = () => {
+    const mount = document.querySelector<HTMLElement>('[data-comments-mount]');
+    if (!mount) {
+      commentsPath = '';
+      return;
+    }
+    if (commentsPath === location.pathname && mount.querySelector('.utterances, script')) return;
+
+    commentsPath = location.pathname;
+    mount.replaceChildren();
+    const script = document.createElement('script');
+    script.src = 'https://utteranc.es/client.js';
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    script.setAttribute('repo', mount.dataset.repository || '');
+    script.setAttribute('issue-term', 'pathname');
+    script.setAttribute('theme', commentsTheme());
+    mount.append(script);
+  };
+
+  const syncCommentsTheme = () => {
+    const frame = document.querySelector<HTMLIFrameElement>('.utterances-frame');
+    frame?.contentWindow?.postMessage({ type: 'set-theme', theme: commentsTheme() }, 'https://utteranc.es');
+  };
+
+  document.addEventListener('astro:page-load', mountComments);
+  document.addEventListener('blog:theme-change', syncCommentsTheme);
+  mountComments();
+</script>

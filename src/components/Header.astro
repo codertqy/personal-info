@@ -14,14 +14,14 @@ const isActive = (href: string) => href === '/' ? path === '/' : path.startsWith
 
 <header class="site-header" data-site-header>
   <div class="site-header__inner shell">
-    <a class="wordmark" href="/" aria-label={`${siteConfig.wordmark}首页`}>
-      <img src={siteConfig.logo} alt="" width="1515" height="1486" />
+    <a class="wordmark" href="/" aria-label={`${siteConfig.wordmark}首页`} data-astro-prefetch>
+      <img src={siteConfig.avatar} alt="" width="300" height="300" />
       <span>{siteConfig.wordmark}</span>
     </a>
 
     <nav class="desktop-nav" aria-label="主导航">
       {links.map((link) => (
-        <a class:list={['nav-link', { active: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+        <a class:list={['nav-link', { active: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined} data-astro-prefetch>
           {link.label}
         </a>
       ))}
@@ -48,7 +48,7 @@ const isActive = (href: string) => href === '/' ? path === '/' : path.startsWith
   <div class="mobile-menu__sheet">
     <div class="mobile-menu__top">
       <span class="wordmark" id="mobile-menu-title">
-        <img src={siteConfig.logo} alt="" width="1515" height="1486" />
+        <img src={siteConfig.avatar} alt="" width="300" height="300" />
         <span>{siteConfig.wordmark}</span>
       </span>
       <button class="icon-button" type="button" data-menu-close aria-label="关闭菜单">
@@ -57,7 +57,7 @@ const isActive = (href: string) => href === '/' ? path === '/' : path.startsWith
     </div>
     <nav aria-label="移动端主导航">
       {links.map((link, index) => (
-        <a class:list={['mobile-nav-link', { active: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+        <a class:list={['mobile-nav-link', { active: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined} data-astro-prefetch>
           <span>0{index + 1}</span>{link.label}
         </a>
       ))}

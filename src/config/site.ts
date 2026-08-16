@@ -13,7 +13,8 @@ export const siteConfig = {
   locale: 'zh-CN',
   url: 'https://personal-info-opal.vercel.app',
   socialImage: '/images/hero-editorial.webp',
-  commentsEnabled: false,
+  commentsEnabled: true,
+  commentsRepository: 'codertqy/personal-info',
 } as const;
 
 export type SiteConfig = typeof siteConfig;

@@ -95,7 +95,14 @@ const jsonLd = article
     <Footer />
     <SearchOverlay />
     <script>
+      let globalInteractionController: AbortController | undefined;
+      let revealObserver: IntersectionObserver | undefined;
+
       const bindGlobalInteractions = () => {
+        globalInteractionController?.abort();
+        revealObserver?.disconnect();
+        globalInteractionController = new AbortController();
+        const { signal } = globalInteractionController;
         const root = document.documentElement;
         const header = document.querySelector<HTMLElement>('[data-site-header]');
         const themeButton = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
@@ -105,17 +112,17 @@ const jsonLd = article
 
         const syncHeader = () => header?.classList.toggle('is-compact', scrollY > 24);
         syncHeader();
-        addEventListener('scroll', syncHeader, { passive: true });
+        addEventListener('scroll', syncHeader, { passive: true, signal });
 
-        if (themeButton && !themeButton.dataset.bound) {
-          themeButton.dataset.bound = 'true';
+        if (themeButton) {
           themeButton.setAttribute('aria-label', root.dataset.theme === 'dark' ? '切换到浅色模式' : '切换深色模式');
           themeButton.addEventListener('click', () => {
             const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
             root.dataset.theme = next;
             localStorage.setItem('blog-theme', next);
             themeButton.setAttribute('aria-label', next === 'dark' ? '切换到浅色模式' : '切换到深色模式');
-          });
+            document.dispatchEvent(new CustomEvent('blog:theme-change', { detail: next }));
+          }, { signal });
         }
 
         const openMenu = () => {
@@ -129,41 +136,40 @@ const jsonLd = article
           menuOpen?.focus();
         };
 
-        if (menuOpen && !menuOpen.dataset.bound) {
-          menuOpen.dataset.bound = 'true';
-          menuOpen.addEventListener('click', openMenu);
-          menuClose?.addEventListener('click', closeMenu);
+        if (menuOpen) {
+          menuOpen.addEventListener('click', openMenu, { signal });
+          menuClose?.addEventListener('click', closeMenu, { signal });
           menu?.addEventListener('click', (event) => {
             if (event.target === menu) closeMenu();
-          });
+          }, { signal });
           menu?.addEventListener('cancel', (event) => {
             event.preventDefault();
             closeMenu();
-          });
+          }, { signal });
           menu?.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
               event.preventDefault();
               closeMenu();
             }
-          });
-          menu?.addEventListener('close', () => document.body.classList.remove('scroll-locked'));
+          }, { signal });
+          menu?.addEventListener('close', () => document.body.classList.remove('scroll-locked'), { signal });
         }
 
         const reveals = document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-visible)');
         if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
           reveals.forEach((node) => node.classList.add('is-visible'));
         } else {
-          const observer = new IntersectionObserver(
+          revealObserver = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
                 if (!entry.isIntersecting) return;
                 entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
+                revealObserver?.unobserve(entry.target);
               });
             },
             { rootMargin: '0px 0px -15% 0px', threshold: 0.04 },
           );
-          reveals.forEach((node) => observer.observe(node));
+          reveals.forEach((node) => revealObserver?.observe(node));
         }
       };
 
