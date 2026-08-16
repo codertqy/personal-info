@@ -83,6 +83,7 @@ content:
         label: 正文
         type: rich-text
         required: true
+        description: 可通过编辑器工具栏插入多张正文图片。
         options:
           format: markdown
           switcher: true
@@ -122,6 +123,14 @@ content:
         label: 标签
         type: string
         list: true
+      - name: image
+        label: 日常主图（可选）
+        type: image
+        description: 显示在标题和正文之间；不选择也可以正常发布。
+      - name: imageAlt
+        label: 主图说明
+        type: string
+        description: 添加主图时，请用一句话描述图片内容。
       - name: draft
         label: 保存为草稿
         type: boolean
@@ -132,7 +141,7 @@ content:
         required: true
         options:
           format: markdown
-          media: false
+          switcher: true
 
 settings:
   commit:

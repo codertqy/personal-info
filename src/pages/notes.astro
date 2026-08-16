@@ -23,6 +23,7 @@ const formatDate = (date: Date) => new Intl.DateTimeFormat('zh-CN', { year: 'num
         </div>
         <div class="timeline-note__content">
           <h2>{entry.data.title}</h2>
+          {entry.data.image && <img class="timeline-note__image" src={entry.data.image} alt={entry.data.imageAlt || entry.data.title} width="1200" height="800" loading="lazy" />}
           <div class="note-prose"><Content /></div>
           <ul aria-label="记录标签">{entry.data.tags.map((tag) => <li>#{tag}</li>)}</ul>
         </div>

@@ -27,6 +27,8 @@ const notes = defineCollection({
     published: z.coerce.date(),
     mood: z.string().default('日常'),
     tags: z.array(z.string()).default([]),
+    image: z.preprocess((value) => value === '' ? undefined : value, z.string().optional()),
+    imageAlt: z.preprocess((value) => value === '' ? undefined : value, z.string().optional()),
     draft: z.boolean().default(false),
   }),
 });

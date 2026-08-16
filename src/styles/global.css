@@ -278,8 +278,10 @@ figure { margin: 0; }
 .note-card__meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; color: var(--muted); font-size: 12px; }
 .note-card__meta span { color: var(--accent-dark); }
 .note-card h3 { margin: 28px 0 14px; font-family: var(--serif); font-size: 24px; line-height: 1.45; }
+.note-card__image { width: 100%; aspect-ratio: 3 / 2; margin: 18px 0; object-fit: cover; }
 .note-card__body { color: var(--muted); font-size: 14px; line-height: 1.8; }
 .note-card__body p { margin: 0; }
+.note-card__body img { width: 100%; height: auto; margin: 16px 0; }
 .note-card ul, .timeline-note ul { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 24px 0 0; padding: 0; color: var(--sage); font-size: 12px; list-style: none; }
 .eyebrow { margin: 0; color: var(--accent-dark); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
 
@@ -303,8 +305,10 @@ figure { margin: 0; }
 .timeline-note__date { display: grid; align-content: start; gap: 12px; color: var(--muted); font-size: 13px; }
 .timeline-note__date span { color: var(--accent-dark); }
 .timeline-note__content h2 { margin: 0 0 18px; font-family: var(--serif); font-size: clamp(28px, 3vw, 38px); line-height: 1.4; }
+.timeline-note__image { width: 100%; max-height: 680px; margin: 8px 0 26px; object-fit: cover; }
 .note-prose { color: var(--muted); font-family: var(--serif); font-size: 17px; line-height: 1.9; }
 .note-prose p { margin: 0 0 18px; }
+.note-prose img { width: 100%; height: auto; margin: 18px 0; }
 .note-prose > :last-child { margin-bottom: 0; }
 
 .admin-entry { min-height: calc(100vh - 190px); padding-block: 96px; }
@@ -354,6 +358,7 @@ figure { margin: 0; }
 .article-prose h2::after { content: ""; position: absolute; bottom: 0; left: 0; width: 40px; height: 3px; background: var(--accent); }
 .article-prose h3 { margin: 42px 0 18px; font-size: 25px; }
 .article-prose p { margin: 0 0 22px; }
+.article-prose img { width: 100%; height: auto; margin: 20px 0; }
 .article-prose a { color: var(--accent-dark); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 .article-prose blockquote { position: relative; margin: 36px 0; padding: 22px 28px 22px 66px; border-left: 3px solid var(--accent); background: var(--surface-soft); color: var(--muted); }
 .article-prose blockquote::before { content: "“"; position: absolute; top: 3px; left: 20px; color: var(--accent); font-size: 54px; line-height: 1; }
