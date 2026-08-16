@@ -1,0 +1,67 @@
+---
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config/site';
+
+const path = Astro.url.pathname;
+const links = [
+  { href: '/', label: '首页' },
+  { href: '/articles/', label: '文章' },
+  { href: '/projects/', label: '项目' },
+  { href: '/about/', label: '关于' },
+];
+const isActive = (href: string) => href === '/' ? path === '/' : path.startsWith(href);
+---
+
+<header class="site-header" data-site-header>
+  <div class="site-header__inner shell">
+    <a class="wordmark" href="/" aria-label={`${siteConfig.wordmark}首页`}>
+      <img src={siteConfig.logo} alt="" width="1515" height="1486" />
+      <span>{siteConfig.wordmark}</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="主导航">
+      {links.map((link) => (
+        <a class:list={['nav-link', { active: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="nav-tools">
+      <button class="icon-button search-trigger" type="button" data-search-open aria-label="搜索文章">
+        <Icon name="ph:magnifying-glass" size={21} />
+        <span>搜索</span>
+      </button>
+      <span class="tool-divider" aria-hidden="true"></span>
+      <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="切换深色模式">
+        <span class="theme-icon theme-icon--light"><Icon name="ph:sun" size={22} /></span>
+        <span class="theme-icon theme-icon--dark"><Icon name="ph:moon-fill" size={22} /></span>
+      </button>
+      <button class="icon-button menu-trigger" type="button" data-menu-open aria-label="打开菜单">
+        <Icon name="ph:list" size={29} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog class="mobile-menu" data-mobile-menu aria-labelledby="mobile-menu-title">
+  <div class="mobile-menu__sheet">
+    <div class="mobile-menu__top">
+      <span class="wordmark" id="mobile-menu-title">
+        <img src={siteConfig.logo} alt="" width="1515" height="1486" />
+        <span>{siteConfig.wordmark}</span>
+      </span>
+      <button class="icon-button" type="button" data-menu-close aria-label="关闭菜单">
+        <Icon name="ph:x" size={29} />
+      </button>
+    </div>
+    <nav aria-label="移动端主导航">
+      {links.map((link, index) => (
+        <a class:list={['mobile-nav-link', { active: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+          <span>0{index + 1}</span>{link.label}
+        </a>
+      ))}
+    </nav>
+    <p>{siteConfig.motto}</p>
+  </div>
+</dialog>

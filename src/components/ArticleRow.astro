@@ -1,0 +1,28 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  date: Date;
+  category: string;
+  image: string;
+  imageAlt: string;
+  index?: number;
+}
+const { href, title, description, date, category, image, imageAlt, index = 0 } = Astro.props;
+const formatted = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date).replaceAll('/', '—');
+---
+
+<article class="article-row" style={`--stagger:${index * 80}ms`}>
+  <div class="article-row__meta">
+    <time datetime={date.toISOString()}>{formatted}</time>
+    <a href={`/categories/${encodeURIComponent(category)}/`}>{category}</a>
+  </div>
+  <a class="article-row__body" href={href}>
+    <h3>{title}</h3>
+    <p>{description}</p>
+  </a>
+  <a class="article-row__image" href={href} tabindex="-1" aria-hidden="true">
+    <img src={image} alt={imageAlt} width="720" height="480" loading="lazy" decoding="async" />
+  </a>
+</article>

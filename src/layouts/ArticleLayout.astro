@@ -1,0 +1,103 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ArticleToc from '@/components/ArticleToc.astro';
+import { Icon } from 'astro-icon/components';
+
+interface Heading { depth: number; slug: string; text: string; }
+interface Recommendation { href: string; title: string; category: string; }
+interface Props {
+  title: string;
+  description: string;
+  published: Date;
+  updated?: Date;
+  category: string;
+  tags: string[];
+  image: string;
+  imageAlt: string;
+  readingMinutes: number;
+  headings: Heading[];
+  previous?: Recommendation;
+  next?: Recommendation;
+  recommendations?: Recommendation[];
+}
+const { title, description, published, updated, category, tags, image, imageAlt, readingMinutes, headings, previous, next, recommendations = [] } = Astro.props;
+const date = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(published).replaceAll('/', '—');
+---
+
+<BaseLayout title={title} description={description} image={image} article published={published} updated={updated}>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+  <article class="article-page">
+    <header class="article-header shell shell--article">
+      <p class="eyebrow">{category} · 阅读约 {readingMinutes} 分钟</p>
+      <h1>{title}</h1>
+      <div class="article-header__meta">
+        <time datetime={published.toISOString()}>{date}</time>
+        <a href={`/categories/${encodeURIComponent(category)}/`}>{category}</a>
+        {tags.map((tag) => <a href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a>)}
+      </div>
+      <p class="article-dek">{description}</p>
+    </header>
+
+    <figure class="article-cover shell" data-reveal>
+      <img src={image} alt={imageAlt} width="1536" height="1024" fetchpriority="high" />
+      <figcaption>{imageAlt}</figcaption>
+    </figure>
+
+    <div class="article-reading shell">
+      <ArticleToc headings={headings} />
+      <div class="article-prose">
+        <slot />
+      </div>
+    </div>
+
+    <footer class="article-end shell shell--article" data-reveal>
+      <div class="article-end__mark" aria-hidden="true"><Icon name="ph:leaf" size={24} /></div>
+      <nav class="article-neighbors" aria-label="上一篇与下一篇">
+        {previous ? <a href={previous.href}><span>上一篇 · {previous.category}</span><strong>{previous.title}</strong></a> : <span></span>}
+        {next ? <a href={next.href}><span>下一篇 · {next.category}</span><strong>{next.title}</strong></a> : <span></span>}
+      </nav>
+      {recommendations.length > 0 && (
+        <section class="recommendations">
+          <h2>继续阅读</h2>
+          {recommendations.map((item) => <a href={item.href}><span>{item.category}</span><strong>{item.title}</strong><span aria-hidden="true">→</span></a>)}
+        </section>
+      )}
+      <p class="comments-note">评论功能当前关闭，可在 <code>src/config/site.ts</code> 中配置。</p>
+    </footer>
+  </article>
+
+  <script>
+    const bindArticle = () => {
+      const bar = document.querySelector<HTMLElement>('[data-reading-progress]');
+      const article = document.querySelector<HTMLElement>('.article-page');
+      if (bar && article) {
+        const update = () => {
+          const start = article.offsetTop;
+          const total = article.scrollHeight - innerHeight;
+          const value = Math.max(0, Math.min(1, (scrollY - start) / Math.max(total, 1)));
+          bar.style.transform = `scaleX(${value})`;
+        };
+        addEventListener('scroll', update, { passive: true });
+        update();
+      }
+
+      document.querySelectorAll<HTMLElement>('.article-prose pre').forEach((pre) => {
+        if (pre.querySelector('.copy-code')) return;
+        const language = [...pre.classList].find((name) => name.startsWith('language-'))?.replace('language-', '') || pre.querySelector('code')?.className.replace('language-', '') || 'code';
+        pre.dataset.language = language;
+        const button = document.createElement('button');
+        button.className = 'copy-code';
+        button.type = 'button';
+        button.textContent = '复制';
+        button.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(pre.querySelector('code')?.textContent || '');
+          button.textContent = '已复制';
+          setTimeout(() => { button.textContent = '复制'; }, 1400);
+        });
+        pre.append(button);
+      });
+    };
+    document.addEventListener('astro:page-load', bindArticle);
+    bindArticle();
+  </script>
+</BaseLayout>

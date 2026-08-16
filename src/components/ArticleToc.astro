@@ -1,0 +1,40 @@
+---
+interface Heading { depth: number; slug: string; text: string; }
+interface Props { headings: Heading[]; }
+const { headings } = Astro.props;
+const visible = headings.filter((heading) => heading.depth <= 3);
+---
+
+{visible.length > 0 && (
+  <>
+    <aside class="article-toc article-toc--desktop" aria-label="文章目录">
+      <p>目录</p>
+      <nav>
+        {visible.map((heading) => <a class:list={[`depth-${heading.depth}`]} href={`#${heading.slug}`}>{heading.text}</a>)}
+      </nav>
+    </aside>
+    <details class="article-toc article-toc--mobile">
+      <summary>文章目录</summary>
+      <nav>
+        {visible.map((heading) => <a class:list={[`depth-${heading.depth}`]} href={`#${heading.slug}`}>{heading.text}</a>)}
+      </nav>
+    </details>
+  </>
+)}
+
+<script>
+  const bindToc = () => {
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('.article-toc a')];
+    if (!links.length) return;
+    const headings = links.map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1)))).filter(Boolean) as HTMLElement[];
+    const setCurrent = (id: string) => links.forEach((link) => link.classList.toggle('current', decodeURIComponent(link.hash.slice(1)) === id));
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (visible?.target.id) setCurrent(visible.target.id);
+    }, { rootMargin: '-18% 0px -68% 0px', threshold: 0 });
+    headings.forEach((heading) => observer.observe(heading));
+    if (headings[0]) setCurrent(headings[0].id);
+  };
+  document.addEventListener('astro:page-load', bindToc);
+  bindToc();
+</script>

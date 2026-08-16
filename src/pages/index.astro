@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArticleRow from '@/components/ArticleRow.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import { projects } from '@/data/projects';
+import { siteConfig } from '@/config/site';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+  .slice(0, 3);
+const featuredProject = projects[0];
+---
+
+<BaseLayout>
+  <section class="hero shell">
+    <div class="hero__copy">
+      <h1 aria-label={`你好，我是${siteConfig.wordmark}。`}>
+        <span>你好，我是</span>
+        <span class="hero__name">{siteConfig.wordmark}。</span>
+      </h1>
+      <span class="hero__rule" aria-hidden="true"></span>
+      <p class="hero__intro">{siteConfig.description}</p>
+      <a class="hero__cta text-link" href="/articles/">阅读最新文章 <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="hero__motto" aria-label={siteConfig.motto}>
+      <span>{siteConfig.motto}</span>
+      <Icon name="ph:seal-check" size={24} />
+    </div>
+    <figure class="hero__image">
+      <img src="/images/hero-editorial.webp" alt="暖色自然光下的书籍、陶杯、纸张和玻璃花瓶" width="1122" height="1402" fetchpriority="high" />
+    </figure>
+  </section>
+
+  <section class="home-section shell" data-reveal>
+    <SectionHeading title="最近写作" href="/articles/" linkLabel="查看全部文章" />
+    <div class="article-list reveal-children">
+      {articles.map((article, index) => (
+        <ArticleRow
+          href={`/articles/${article.id.replace(/\.(md|mdx)$/i, '')}/`}
+          title={article.data.title}
+          description={article.data.description}
+          date={article.data.published}
+          category={article.data.category}
+          image={article.data.image}
+          imageAlt={article.data.imageAlt}
+          index={index}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="home-section project-section shell" data-reveal>
+    <SectionHeading title="精选项目" href="/projects/" linkLabel="查看全部项目" />
+    <article class="featured-project reveal-children">
+      <img src={featuredProject.image} alt={featuredProject.imageAlt} width="1536" height="1024" loading="lazy" />
+      <div>
+        <p class="eyebrow">{featuredProject.status}</p>
+        <h3>{featuredProject.title}</h3>
+        <p>{featuredProject.description}</p>
+        <ul aria-label="项目标签">
+          {featuredProject.tags.map((tag) => <li><span aria-hidden="true"></span>{tag}</li>)}
+        </ul>
+        <a class="text-link" href="/projects/">查看项目说明 <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+  </section>
+</BaseLayout>

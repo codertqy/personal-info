@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.astro/
+.npm-cache/
+tmp/
+deliverables/
+tools/
+
+.env
+.env.*
+!.env.example
+
+*.log
+.DS_Store
+Thumbs.db

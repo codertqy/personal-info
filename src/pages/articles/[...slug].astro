@@ -1,0 +1,22 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import ArticleLayout from '@/layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles', ({ data }) => !data.draft);
+  return articles.map((article) => ({ params: { slug: article.id.replace(/\.(md|mdx)$/i, '') }, props: { article } }));
+}
+
+const { article } = Astro.props;
+const { Content, headings } = await render(article);
+const articles = (await getCollection('articles', ({ data }) => !data.draft)).sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+const currentIndex = articles.findIndex((item) => item.id === article.id);
+const mapLink = (item?: CollectionEntry<'articles'>) => item ? ({ href: `/articles/${item.id.replace(/\.(md|mdx)$/i, '')}/`, title: item.data.title, category: item.data.category }) : undefined;
+const previous = mapLink(articles[currentIndex + 1]);
+const next = mapLink(articles[currentIndex - 1]);
+const recommendations = articles.filter((item) => item.id !== article.id).slice(0, 3).map((item) => ({ href: `/articles/${item.id.replace(/\.(md|mdx)$/i, '')}/`, title: item.data.title, category: item.data.category }));
+---
+
+<ArticleLayout {...article.data} headings={headings} previous={previous} next={next} recommendations={recommendations}>
+  <Content />
+</ArticleLayout>
