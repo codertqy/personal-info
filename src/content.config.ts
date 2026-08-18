@@ -33,4 +33,20 @@ const notes = defineCollection({
   }),
 });
 
-export const collections = { articles, notes };
+const gallery = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/gallery' }),
+  schema: z.object({
+    title: z.string(),
+    image: z.string(),
+    imageAlt: z.string(),
+    captured: z.coerce.date(),
+    category: z.string().default('日常'),
+    location: z.preprocess((value) => value === '' ? undefined : value, z.string().optional()),
+    featured: z.boolean().default(false),
+    order: z.number().int().nonnegative().default(99),
+    orientation: z.enum(['landscape', 'portrait']).default('landscape'),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { articles, notes, gallery };

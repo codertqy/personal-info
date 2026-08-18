@@ -15,3 +15,7 @@ tools/
 Thumbs.db
 
 .vercel
+
+# 本地视觉验收截图
+/implementation-home*.png
+/design-comparison-home*.png

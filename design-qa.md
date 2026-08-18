@@ -1,44 +1,31 @@
-# Design QA
+# 设计验收记录
 
-## Targets and evidence
+## 对照素材
 
-- Primary visual truth: `D:/Personal-website/deliverables/personal-blog-design-package/assets/01-home-desktop.png` (929 × 1693 px).
-- Supporting visual truth: `02-home-mobile.png` (853 × 1844 px), `03-article-desktop.png` (1009 × 1558 px), `04-search-desktop.png` (1487 × 1058 px), and `05-motion-storyboard.png`.
-- Desktop implementation: `D:/Personal-website/tmp/qa/qa-home-1440.png` (1425 × 990 px browser client area from a 1440 × 1000 CSS viewport, device density 1).
-- Mobile implementation: `D:/Personal-website/tmp/qa/final-home-390.png` (375 × 812 px browser client area from a 390 × 844 CSS viewport, device density 1).
-- Search implementation: `D:/Personal-website/tmp/qa/qa-search-1440.png` (1440 × 1000 px; modal removes the page scrollbar).
-- Article implementation: `D:/Personal-website/tmp/qa/article-1440.png` (1425 × 1000 px browser client area).
-- Combined comparisons: `tmp/qa/qa-compare-home.jpg`, `tmp/qa/compare-home-mobile.jpg`, `tmp/qa/qa-compare-search.jpg`, and `tmp/qa/qa-compare-article.jpg`.
-- Normalization: each source image was top-aligned and fitted to the implementation capture dimensions with Lanczos resampling before side-by-side review. Browser chrome was excluded; scrollbar width was recorded rather than treated as layout drift.
-- State: light theme, initial/top-of-page state; search comparison uses query “设计” with three results.
+- 设计参考：`C:\Users\27258\.codex\generated_images\01a00a5a-48ef-7e10-978c-02c870f8a92e\exec-b0cbceb6-54e5-4da7-9018-a35146600631.png`
+- 最终实现截图：`D:\Personal-website\implementation-home-passed-v2.png`
+- 完整对照图：`D:\Personal-website\design-comparison-home-passed-v2.png`
+- 对照视口：1487 × 1058 CSS 像素，设备像素比 1
+- 素材像素：参考图与实现截图均为 1487 × 1058
+- 移动端截图：`D:\Personal-website\implementation-home-mobile-final.png`
 
-## Full-view and focused comparison
+完整对照图已经以相同像素并排呈现，标题、间距、影像层级和导航均可清晰判断，因此不再单独制作局部裁切对照；移动端另行截图检查。
 
-- Home desktop: the warm paper surface, single-rule header, centered four-item navigation, serif-led 55:45 hero, vertical motto, editorial still-life crop, terracotta accents, and unboxed section structure match the source system. The final desktop pass increased hero image height and vertical rhythm to align the primary composition.
-- Home mobile: the compact header, two-line hero title, vertical motto, full-width 4:3 image, and row-style article archive match the mobile reference. The 320 px and 390 px captures have no horizontal overflow or text clipping.
-- Search: paper-like rectangular panel, restrained overlay, thin terracotta input border, three line-based results, focus placement, and close affordance match the reference. The browser-native duplicate search cancel control was removed.
-- Article: title hierarchy, wide editorial cover, 720 px prose measure, serif body, sticky TOC, code treatment, and warm neutral palette are consistent with the article reference. The prototype’s visible percentage label was intentionally omitted because the written specification requires a non-numeric 2–3 px progress bar.
-- Required fidelity surfaces: typography uses the specified Source Han/Noto/Song fallback stack and 700 display weight; spacing follows the 4 px scale; colors use the documented tokens; all visible photography is independent generated raster imagery with matching natural-light art direction; Chinese copy and metadata match the content model.
+## 验收结果
 
-## Comparison history
+- 字体：中文主标题的体量、衬线气质和层级与参考方向一致；辅助信息保持低对比度。
+- 间距：左侧身份区、导航、拖拽提示和中部影像簇之间的留白已对齐；桌面端无拥挤或遮挡。
+- 色彩：使用近黑蓝背景、冷灰文字和轻微蓝色描边，维持夜间影像氛围。
+- 图片：六张真实影像均使用高质量 WebP，主图清晰，横竖构图比例稳定，没有拉伸。
+- 文案：已移除“个人博客”和文章导向，统一为影像空间、图库与日常片刻。
+- 交互：桌面端拖拽、轻微视差、图片灯箱、上一张/下一张、键盘方向键与 Escape、图库分类筛选均已验证。
+- 响应式：移动端改为横向影像浏览，无页面横向溢出。
+- 稳定性：交互检查期间无控制台错误和页面异常。
 
-1. Initial responsive pass found a P2 mobile hero that was too tall. Fixed the mobile header/padding rhythm and changed the image to a 4:3 full-width crop; the revised 390/320 captures align with the source and reveal the article archive within the first viewport.
-2. Initial interaction pass found P2 Escape handling gaps in the mobile menu and search dialog. Added explicit keyboard handlers and verified that both dialogs close and release scroll lock.
-3. Initial article pass found a P2 encoded-anchor mismatch that prevented TOC current-section styling. Normalized hash comparison and verified the current heading in both desktop and mobile TOCs.
-4. Initial search comparison found a P2 duplicate browser cancel icon. Disabled the native cancel affordance and retained the Phosphor close icon.
-5. Initial desktop comparison found a P2 hero proportion mismatch and a flat background. Increased the desktop hero/image height and added a low-contrast generated paper texture; the post-fix comparison has no remaining P0/P1/P2 mismatch.
+## 修正记录
 
-## Browser and interaction verification
+1. P1：拖拽容器吞掉了卡片点击。增加点击与拖拽距离判断，现可正常打开灯箱，并已验证方向键切换到 `02 / 06`。
+2. P2：首轮中左右影像簇、标题和侧栏提示存在位置漂移。重新校准卡片坐标、标题字号、导航和拖拽提示位置。
+3. P3：参考图雾气更重。实现保留了较轻的环境光与暗角，使照片主体更清晰，并减少移动端渲染负担。
 
-- Checked widths: 1440, 1024, 768, 390, and 320 px; all reported zero horizontal overflow.
-- Tested navigation, article filtering, `/` search shortcut, 120 ms local search debounce, arrow selection, Enter navigation, Escape close, mobile dialog focus/scroll lock, theme toggle persistence, article TOC highlighting, reading progress, and code copy.
-- Checked home, articles, article detail, projects, and about routes at desktop and mobile widths.
-- Browser console: no errors or warnings after the final route and interaction pass.
-- Reduced-motion rules were inspected in the delivered stylesheet: scale and large displacement are removed, delays are cleared, and duration is capped at 80 ms.
-
-## Follow-up polish
-
-- P3: exact Chinese glyph metrics can vary on systems without Source Han Serif SC or Noto Serif SC; the fallback stack preserves hierarchy and measure.
-- P3: replace the clearly marked demo identity, social links, article copy, and project record before production deployment.
-
-final result: passed
+最终结果：通过。

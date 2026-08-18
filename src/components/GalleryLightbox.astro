@@ -1,0 +1,90 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<dialog class="lightbox" data-lightbox aria-labelledby="lightbox-title">
+  <div class="lightbox__backdrop" data-lightbox-close></div>
+  <div class="lightbox__panel">
+    <button class="lightbox__close" type="button" data-lightbox-close aria-label="关闭图片预览">
+      <Icon name="ph:x" size={28} />
+    </button>
+    <button class="lightbox__nav lightbox__nav--previous" type="button" data-lightbox-previous aria-label="查看上一张图片">
+      <Icon name="ph:arrow-left" size={28} />
+    </button>
+    <figure>
+      <img data-lightbox-image src="" alt="" width="1440" height="1080" />
+      <figcaption>
+        <h2 id="lightbox-title" data-lightbox-title></h2>
+        <p data-lightbox-meta></p>
+        <span data-lightbox-count></span>
+      </figcaption>
+    </figure>
+    <button class="lightbox__nav lightbox__nav--next" type="button" data-lightbox-next aria-label="查看下一张图片">
+      <Icon name="ph:arrow-right" size={28} />
+    </button>
+  </div>
+</dialog>
+
+<script>
+  let lightboxController: AbortController | undefined;
+
+  const bindLightbox = () => {
+    lightboxController?.abort();
+    lightboxController = new AbortController();
+    const { signal } = lightboxController;
+    const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+    if (!dialog) return;
+    const items = [...document.querySelectorAll<HTMLButtonElement>('[data-gallery-item]')];
+    const image = dialog.querySelector<HTMLImageElement>('[data-lightbox-image]');
+    const title = dialog.querySelector<HTMLElement>('[data-lightbox-title]');
+    const meta = dialog.querySelector<HTMLElement>('[data-lightbox-meta]');
+    const count = dialog.querySelector<HTMLElement>('[data-lightbox-count]');
+    let current = 0;
+
+    const render = (index: number) => {
+      current = (index + items.length) % items.length;
+      const item = items[current];
+      if (!item || !image || !title || !meta || !count) return;
+      image.src = item.dataset.image || '';
+      image.alt = item.dataset.alt || '';
+      title.textContent = item.dataset.title || '';
+      meta.textContent = item.dataset.meta || '';
+      count.textContent = `${String(current + 1).padStart(2, '0')} / ${String(items.length).padStart(2, '0')}`;
+    };
+
+    const open = (index: number) => {
+      render(index);
+      dialog.showModal();
+      document.body.classList.add('scroll-locked');
+      dialog.querySelector<HTMLButtonElement>('[data-lightbox-close]')?.focus();
+    };
+    const close = () => {
+      dialog.close();
+      document.body.classList.remove('scroll-locked');
+      items[current]?.focus();
+    };
+
+    items.forEach((item, index) => item.addEventListener('click', () => {
+      if (item.dataset.skipLightbox === 'true') {
+        item.dataset.skipLightbox = 'false';
+        return;
+      }
+      open(index);
+    }, { signal }));
+    dialog.querySelectorAll<HTMLElement>('[data-lightbox-close]').forEach((button) => button.addEventListener('click', close, { signal }));
+    dialog.querySelector('[data-lightbox-previous]')?.addEventListener('click', () => render(current - 1), { signal });
+    dialog.querySelector('[data-lightbox-next]')?.addEventListener('click', () => render(current + 1), { signal });
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      close();
+    }, { signal });
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') render(current - 1);
+      if (event.key === 'ArrowRight') render(current + 1);
+    }, { signal });
+    dialog.addEventListener('close', () => document.body.classList.remove('scroll-locked'), { signal });
+  };
+
+  document.addEventListener('astro:page-load', bindLightbox);
+  bindLightbox();
+</script>

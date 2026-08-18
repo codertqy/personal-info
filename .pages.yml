@@ -5,149 +5,84 @@ media:
   categories: [image]
 
 content:
-  - name: articles
-    label: 文章
+  - name: gallery
+    label: 图库
     type: collection
-    path: src/content/articles
-    format: yaml-frontmatter
-    filename:
-      template: "{primary}.md"
-      field: create
-    view:
-      fields: [title, published, category, draft]
-      primary: title
-      sort: [published, title]
-      search: [title, description, category, tags]
-      default:
-        sort: published
-        order: desc
-    fields:
-      - name: title
-        label: 标题
-        type: string
-        required: true
-      - name: description
-        label: 摘要
-        type: text
-        required: true
-        description: 显示在文章列表和搜索结果中。
-      - name: published
-        label: 发布日期
-        type: date
-        required: true
-        options:
-          format: yyyy-MM-dd
-      - name: updated
-        label: 更新日期
-        type: date
-        default: ""
-        options:
-          format: yyyy-MM-dd
-      - name: category
-        label: 分类
-        type: string
-        required: true
-        default: 开发记录
-      - name: tags
-        label: 标签
-        type: string
-        list: true
-      - name: image
-        label: 封面图片
-        type: image
-        required: true
-      - name: imageAlt
-        label: 图片说明
-        type: string
-        required: true
-        description: 用一句话描述图片，供无法查看图片的读者使用。
-      - name: draft
-        label: 保存为草稿
-        type: boolean
-        default: true
-      - name: featured
-        label: 推荐文章
-        type: boolean
-        default: false
-      - name: lang
-        label: 语言
-        type: string
-        default: zh-CN
-        hidden: true
-      - name: readingMinutes
-        label: 预计阅读分钟数
-        type: number
-        default: 5
-        required: true
-      - name: body
-        label: 正文
-        type: rich-text
-        required: true
-        description: 可通过编辑器工具栏插入多张正文图片。
-        options:
-          format: markdown
-          switcher: true
-
-  - name: notes
-    label: 日常
-    type: collection
-    path: src/content/notes
+    path: src/content/gallery
     format: yaml-frontmatter
     filename:
       template: "{year}-{month}-{day}-{primary}.md"
       field: create
     view:
-      fields: [title, published, mood, draft]
+      fields: [title, captured, category, featured, draft]
       primary: title
-      sort: [published, title]
-      search: [title, mood, tags]
+      sort: [order, captured, title]
+      search: [title, category, location, imageAlt]
       default:
-        sort: published
-        order: desc
+        sort: order
+        order: asc
     fields:
       - name: title
-        label: 标题
+        label: 图片标题
         type: string
         required: true
-      - name: published
+      - name: image
+        label: 图片
+        type: image
+        required: true
+        description: 建议上传 WebP、JPEG 或 PNG；横图建议至少 1600 像素宽。
+      - name: imageAlt
+        label: 图片说明
+        type: string
+        required: true
+        description: 用一句话描述画面内容，方便无障碍阅读。
+      - name: captured
         label: 日期
         type: date
         required: true
         options:
           format: yyyy-MM-dd
-      - name: mood
-        label: 此刻状态
-        type: string
+      - name: category
+        label: 分类
+        type: select
+        required: true
         default: 日常
-      - name: tags
-        label: 标签
+        options:
+          values: [日常, 天气, 城市, 旅途]
+      - name: location
+        label: 地点（可选）
         type: string
-        list: true
-      - name: image
-        label: 日常主图（可选）
-        type: image
-        description: 显示在标题和正文之间；不选择也可以正常发布。
-      - name: imageAlt
-        label: 主图说明
-        type: string
-        description: 添加主图时，请用一句话描述图片内容。
+      - name: orientation
+        label: 图片方向
+        type: select
+        required: true
+        default: landscape
+        options:
+          values:
+            - name: landscape
+              label: 横图
+            - name: portrait
+              label: 竖图
+      - name: featured
+        label: 推荐到首页
+        type: boolean
+        default: true
+      - name: order
+        label: 首页顺序
+        type: number
+        required: true
+        default: 99
+        description: 数字越小越靠前；首页最多展示前六张。
       - name: draft
-        label: 保存为草稿
+        label: 暂不公开
         type: boolean
         default: false
-      - name: body
-        label: 内容
-        type: rich-text
-        required: true
-        options:
-          format: markdown
-          switcher: true
 
 settings:
   commit:
     identity: user
     templates:
-      create: "content: 新增 {filename}"
-      update: "content: 更新 {filename}"
-      delete: "content: 删除 {filename}"
-      rename: "content: 重命名 {oldFilename} 为 {filename}"
+      create: "图库：新增 {filename}"
+      update: "图库：更新 {filename}"
+      delete: "图库：删除 {filename}"
+      rename: "图库：重命名 {oldFilename} 为 {filename}"

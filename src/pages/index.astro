@@ -1,73 +1,139 @@
 ---
-import { getCollection, render } from 'astro:content';
-import { Icon } from 'astro-icon/components';
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import ArticleRow from '@/components/ArticleRow.astro';
-import SectionHeading from '@/components/SectionHeading.astro';
+import GalleryLightbox from '@/components/GalleryLightbox.astro';
 import { siteConfig } from '@/config/site';
 
-const articles = (await getCollection('articles', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
-  .slice(0, 3);
-const noteEntries = (await getCollection('notes', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
-  .slice(0, 3);
-const notes = await Promise.all(noteEntries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })));
-const formatNoteDate = (date: Date) => new Intl.DateTimeFormat('zh-CN', { month: '2-digit', day: '2-digit' }).format(date).replace('/', '.');
+const gallery = (await getCollection('gallery', ({ data }) => !data.draft && data.featured))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 6);
+const formatDate = (date: Date) => new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric', month: '2-digit', day: '2-digit',
+}).format(date).replaceAll('/', '—');
 ---
 
 <BaseLayout>
-  <section class="hero shell">
-    <figure class="hero__image">
-      <img src="/images/hero-editorial.webp" alt="暖色自然光下的书籍、陶杯、纸张和玻璃花瓶" width="1122" height="1402" fetchpriority="high" />
-      <figcaption><span>DEV NOTES</span><span>01 — 持续记录</span></figcaption>
-    </figure>
-    <div class="hero__copy">
-      <p class="hero__kicker">天气又不好 · 开发与生活记录</p>
-      <h1>把问题写下来，<span>也把答案留下来。</span></h1>
-      <span class="hero__rule" aria-hidden="true"></span>
-      <p class="hero__intro">{siteConfig.description}</p>
-      <a class="hero__cta text-link" href="/articles/">阅读最新文章 <span aria-hidden="true">→</span></a>
+  <section class="spatial-hero" data-spatial-hero aria-labelledby="spatial-title">
+    <div class="spatial-hero__identity">
+      <h1 id="spatial-title">天气又不好</h1>
+      <p>漂浮影墙<br /><span>互动影像画廊</span></p>
     </div>
-    <div class="hero__motto" aria-label={siteConfig.motto}>
-      <span>{siteConfig.motto}</span>
-      <Icon name="ph:seal-check" size={24} />
+
+    <div class="spatial-hero__date" aria-label="今日标记">
+      <time datetime="2026-08-18">2026—08—18</time>
+      <span>{siteConfig.wordmark}</span>
+    </div>
+
+    <div class="spatial-stage" data-spatial-stage>
+      <div class="spatial-stage__canvas" data-spatial-canvas>
+        {gallery.map((entry, index) => (
+          <button
+            class={`photo-card photo-card--${index + 1}`}
+            type="button"
+            data-gallery-item
+            data-image={entry.data.image}
+            data-alt={entry.data.imageAlt}
+            data-title={entry.data.title}
+            data-meta={`${formatDate(entry.data.captured)} · ${entry.data.location || entry.data.category}`}
+            style={`--order:${index}; --depth:${index % 3 + 1}`}
+            aria-label={`查看图片：${entry.data.title}`}
+          >
+            <img
+              src={entry.data.image}
+              alt={entry.data.imageAlt}
+              width={entry.data.orientation === 'portrait' ? 1080 : 1440}
+              height={entry.data.orientation === 'portrait' ? 1440 : 1080}
+              loading={index === 0 ? 'eager' : 'lazy'}
+              fetchpriority={index === 0 ? 'high' : 'auto'}
+            />
+            <span class="photo-card__caption">
+              <strong>{entry.data.title}</strong>
+              <small>{formatDate(entry.data.captured)} · {entry.data.location || entry.data.category}</small>
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div class="spatial-hero__progress" aria-hidden="true">
+      <span></span><i></i><strong>01 / {String(gallery.length).padStart(2, '0')}</strong>
     </div>
   </section>
 
-  <section class="home-section shell" data-reveal>
-    <SectionHeading title="最近写作" href="/articles/" linkLabel="查看全部文章" />
-    <div class="article-list reveal-children">
-      {articles.map((article, index) => (
-        <ArticleRow
-          href={`/articles/${article.id.replace(/\.(md|mdx)$/i, '')}/`}
-          title={article.data.title}
-          description={article.data.description}
-          date={article.data.published}
-          category={article.data.category}
-          image={article.data.image}
-          imageAlt={article.data.imageAlt}
-          index={index}
-        />
-      ))}
-    </div>
+  <section class="gallery-invitation" data-reveal>
+    <p>把天气、光线和日常里没有说出口的部分，留在影像里。</p>
+    <a href="/gallery/" data-astro-prefetch>进入完整图库 <span aria-hidden="true">→</span></a>
   </section>
 
-  <section class="home-section notes-section shell" data-reveal>
-    <SectionHeading title="最近日常" href="/notes/" linkLabel="查看全部记录" />
-    <div class="note-grid reveal-children">
-      {notes.map(({ entry, Content }) => (
-        <article class="note-card">
-          <div class="note-card__meta">
-            <time datetime={entry.data.published.toISOString()}>{formatNoteDate(entry.data.published)}</time>
-            <span>{entry.data.mood}</span>
-          </div>
-          <h3>{entry.data.title}</h3>
-          {entry.data.image && <img class="note-card__image" src={entry.data.image} alt={entry.data.imageAlt || entry.data.title} width="1200" height="800" loading="lazy" />}
-          <div class="note-card__body"><Content /></div>
-          <ul aria-label="记录标签">{entry.data.tags.map((tag) => <li>#{tag}</li>)}</ul>
-        </article>
-      ))}
-    </div>
-  </section>
+  <GalleryLightbox />
+
+  <script>
+    let spatialController: AbortController | undefined;
+
+    const bindSpatialGallery = () => {
+      spatialController?.abort();
+      spatialController = new AbortController();
+      const { signal } = spatialController;
+      const stage = document.querySelector<HTMLElement>('[data-spatial-stage]');
+      const canvas = document.querySelector<HTMLElement>('[data-spatial-canvas]');
+      if (!stage || !canvas || matchMedia('(prefers-reduced-motion: reduce)').matches || matchMedia('(pointer: coarse)').matches) return;
+      const cards = [...canvas.querySelectorAll<HTMLElement>('.photo-card')];
+
+      let startX = 0;
+      let startY = 0;
+      let baseX = 0;
+      let baseY = 0;
+      let dragging = false;
+      let moved = false;
+      let activeItem: HTMLButtonElement | null = null;
+
+      const clamp = (value: number, limit: number) => Math.max(-limit, Math.min(limit, value));
+      const apply = (x: number, y: number) => {
+        baseX = clamp(x, 76);
+        baseY = clamp(y, 42);
+        canvas.style.setProperty('--stage-x', `${baseX}px`);
+        canvas.style.setProperty('--stage-y', `${baseY}px`);
+      };
+
+      stage.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        dragging = true;
+        moved = false;
+        activeItem = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-gallery-item]');
+        startX = event.clientX - baseX;
+        startY = event.clientY - baseY;
+        stage.setPointerCapture(event.pointerId);
+        stage.classList.add('is-dragging');
+      }, { signal });
+
+      stage.addEventListener('pointermove', (event) => {
+        const rect = stage.getBoundingClientRect();
+        const lookX = (event.clientX - rect.left) / rect.width - .5;
+        const lookY = (event.clientY - rect.top) / rect.height - .5;
+        cards.forEach((card) => {
+          const depth = Number.parseInt(card.style.getPropertyValue('--depth') || '1', 10);
+          card.style.setProperty('--parallax-x', `${lookX * depth * 6}px`);
+          card.style.setProperty('--parallax-y', `${lookY * depth * 4}px`);
+        });
+        if (!dragging) return;
+        const nextX = event.clientX - startX;
+        const nextY = event.clientY - startY;
+        if (Math.abs(nextX - baseX) > 5 || Math.abs(nextY - baseY) > 5) moved = true;
+        apply(nextX, nextY);
+      }, { signal });
+
+      const stopDrag = () => {
+        if (!dragging) return;
+        dragging = false;
+        stage.classList.remove('is-dragging');
+        if (!moved) activeItem?.click();
+        activeItem = null;
+      };
+      stage.addEventListener('pointerup', stopDrag, { signal });
+      stage.addEventListener('pointercancel', stopDrag, { signal });
+    };
+
+    document.addEventListener('astro:page-load', bindSpatialGallery);
+    bindSpatialGallery();
+  </script>
 </BaseLayout>

@@ -5,6 +5,7 @@ import icon from 'astro-icon';
 
 export default defineConfig({
   site: 'https://tianqy.xyz',
+  devToolbar: { enabled: false },
   prefetch: {
     prefetchAll: false,
     defaultStrategy: 'hover',
@@ -14,7 +15,7 @@ export default defineConfig({
     sitemap(),
     icon({
       include: {
-        ph: ['magnifying-glass', 'sun', 'moon-fill', 'list', 'x', 'seal-check', 'leaf'],
+        ph: ['list', 'x', 'hand-grabbing', 'arrow-left', 'arrow-right', 'github-logo', 'envelope-simple'],
       },
     }),
   ],

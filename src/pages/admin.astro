@@ -3,17 +3,17 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { siteConfig } from '@/config/site';
 ---
 
-<BaseLayout title="内容管理" description="天气又不好的博客内容管理入口。" noindex>
-  <section class="admin-entry shell shell--narrow">
-    <p class="eyebrow">OWNER ONLY · 内容管理</p>
-    <h1>写点新的，或者改改旧的。</h1>
-    <p>文章和日常记录保存在 GitHub。进入内容后台后，可以新增、编辑、删除内容并上传封面；保存会触发 Vercel 自动发布。</p>
-    <a class="admin-entry__button" href="https://app.pagescms.org" target="_blank" rel="noreferrer">打开内容后台 <span aria-hidden="true">↗</span></a>
+<BaseLayout title="图片管理" description="天气又不好的图片上传与管理入口。" noindex>
+  <section class="admin-entry page-shell">
+    <p class="eyebrow">OWNER ONLY · 图片管理</p>
+    <h1>上传新的影像。</h1>
+    <p>图库保存在 GitHub。进入管理后台后，可以上传、替换或删除图片，保存后 Vercel 会自动更新网站。</p>
+    <a class="admin-entry__button" href="https://app.pagescms.org" target="_blank" rel="noreferrer">打开图片后台 <span aria-hidden="true">↗</span></a>
     <ol>
       <li>使用拥有仓库权限的 GitHub 账号登录。</li>
-      <li>安装 Pages CMS GitHub App，只授权 <code>personal-info</code> 仓库。</li>
-      <li>选择 <code>{siteConfig.repository.replace('https://github.com/', '')}</code>，然后编辑“文章”或“日常”。</li>
+      <li>选择 <code>{siteConfig.repository.replace('https://github.com/', '')}</code>。</li>
+      <li>进入“图库”，上传图片并填写日期、分类和说明。</li>
     </ol>
-    <p class="admin-entry__note">这个页面只是入口。没有 GitHub 仓库权限的人无法修改内容。</p>
+    <p class="admin-entry__note">公开访客看不到仓库权限，也无法修改图库。</p>
   </section>
 </BaseLayout>

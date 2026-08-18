@@ -1,32 +1,24 @@
 ---
+import { Icon } from 'astro-icon/components';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { siteConfig } from '@/config/site';
 ---
 
-<BaseLayout title="关于" description="关于作者、关注方向与联系信息。">
-  <header class="page-header about-header shell shell--narrow">
-    <p class="eyebrow">ABOUT · 关于作者</p>
-    <h1>关于</h1>
-    <p>{siteConfig.bio}</p>
-  </header>
-  <div class="about-layout shell shell--narrow">
+<BaseLayout title="关于" description="关于天气又不好与这个影像空间。">
+  <section class="about-scene page-shell">
     <figure data-reveal>
       <img src={siteConfig.avatar} alt="天气又不好的头像" width="300" height="300" />
       <figcaption>天气又不好</figcaption>
     </figure>
-    <div class="about-sections">
-      <section data-reveal>
-        <h2>我在关注</h2>
-        <p>目前以 Web 前端为主，关注边缘计算与 AI 智能体，同时正在学习 Java 和 Python。</p>
-      </section>
-      <section data-reveal>
-        <h2>经历与方法</h2>
-        <p>开发经验不足一年。我会在这里记录问题的背景、解决过程与复盘，让零散的实践变成可以长期回看的内容。</p>
-      </section>
-      <section data-reveal>
-        <h2>联系</h2>
-        <p>邮箱：<a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><br />GitHub：<a href={siteConfig.github}>{siteConfig.github}</a><br />项目仓库：<a href={siteConfig.repository}>{siteConfig.repository}</a></p>
-      </section>
+    <div class="about-scene__copy">
+      <p class="eyebrow">ABOUT · 关于</p>
+      <h1>不解释天气，<br />只留下经过的光。</h1>
+      <p>{siteConfig.bio}</p>
+      <p>我主要学习和使用 Web 前端，也在接触 Java、Python、边缘计算与 AI 智能体。这个空间不承担教程或长篇写作，只收藏我愿意留下的画面。</p>
+      <nav aria-label="联系方式">
+        <a href={siteConfig.github} rel="me"><Icon name="ph:github-logo" size={22} />GitHub</a>
+        <a href={`mailto:${siteConfig.email}`}><Icon name="ph:envelope-simple" size={22} />{siteConfig.email}</a>
+      </nav>
     </div>
-  </div>
+  </section>
 </BaseLayout>

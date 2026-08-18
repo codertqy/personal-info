@@ -4,12 +4,9 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <div class="shell site-footer__inner">
-    <p>© {year} {siteConfig.name}</p>
-    <nav aria-label="页脚链接">
-      <a href="/rss.xml">RSS</a>
-      {siteConfig.github ? <a href={siteConfig.github} rel="me">GitHub</a> : <span>GitHub 待填写</span>}
-      {siteConfig.email ? <a href={`mailto:${siteConfig.email}`}>邮箱</a> : <span>邮箱待填写</span>}
-    </nav>
-  </div>
+  <p>© {year} {siteConfig.name}</p>
+  <nav aria-label="页脚链接">
+    <a href={siteConfig.github} rel="me">GitHub</a>
+    <a href={`mailto:${siteConfig.email}`}>邮箱</a>
+  </nav>
 </footer>

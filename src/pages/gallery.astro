@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import GalleryLightbox from '@/components/GalleryLightbox.astro';
+
+const gallery = (await getCollection('gallery', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.captured.valueOf() - a.data.captured.valueOf());
+const categories = [...new Set(gallery.map((entry) => entry.data.category))];
+const formatDate = (date: Date) => new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric', month: '2-digit', day: '2-digit',
+}).format(date).replaceAll('/', '—');
+---
+
+<BaseLayout title="图库" description="天气又不好的全部影像收藏。">
+  <header class="gallery-header page-shell">
+    <p>VISUAL ARCHIVE · 影像收藏</p>
+    <h1>图库</h1>
+    <div>
+      <span>{String(gallery.length).padStart(2, '0')} 张影像</span>
+      <span>持续更新</span>
+    </div>
+  </header>
+
+  <nav class="gallery-filters page-shell" aria-label="按分类筛选图库">
+    <button class="active" type="button" data-gallery-filter="all">全部</button>
+    {categories.map((category) => <button type="button" data-gallery-filter={category}>{category}</button>)}
+  </nav>
+
+  <section class="gallery-grid page-shell" aria-live="polite">
+    {gallery.map((entry, index) => (
+      <article class:list={['gallery-tile', `gallery-tile--${entry.data.orientation}`]} data-category={entry.data.category} data-reveal style={`--order:${index}`}>
+        <button
+          type="button"
+          data-gallery-item
+          data-image={entry.data.image}
+          data-alt={entry.data.imageAlt}
+          data-title={entry.data.title}
+          data-meta={`${formatDate(entry.data.captured)} · ${entry.data.location || entry.data.category}`}
+          aria-label={`查看图片：${entry.data.title}`}
+        >
+          <img
+            src={entry.data.image}
+            alt={entry.data.imageAlt}
+            width={entry.data.orientation === 'portrait' ? 1080 : 1440}
+            height={entry.data.orientation === 'portrait' ? 1440 : 1080}
+            loading={index < 3 ? 'eager' : 'lazy'}
+          />
+          <span><strong>{entry.data.title}</strong><small>{entry.data.category}</small></span>
+        </button>
+        <footer><time datetime={entry.data.captured.toISOString()}>{formatDate(entry.data.captured)}</time><span>{entry.data.location || '未标记地点'}</span></footer>
+      </article>
+    ))}
+  </section>
+
+  <GalleryLightbox />
+
+  <script>
+    let galleryFilterController: AbortController | undefined;
+    const bindGalleryFilters = () => {
+      galleryFilterController?.abort();
+      galleryFilterController = new AbortController();
+      const { signal } = galleryFilterController;
+      const filters = [...document.querySelectorAll<HTMLButtonElement>('[data-gallery-filter]')];
+      const tiles = [...document.querySelectorAll<HTMLElement>('[data-category]')];
+      filters.forEach((button) => button.addEventListener('click', () => {
+        const selected = button.dataset.galleryFilter;
+        filters.forEach((item) => item.classList.toggle('active', item === button));
+        tiles.forEach((tile) => {
+          tile.hidden = selected !== 'all' && tile.dataset.category !== selected;
+        });
+      }, { signal }));
+    };
+    document.addEventListener('astro:page-load', bindGalleryFilters);
+    bindGalleryFilters();
+  </script>
+</BaseLayout>

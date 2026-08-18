@@ -5,55 +5,45 @@ import { siteConfig } from '@/config/site';
 const path = Astro.url.pathname;
 const links = [
   { href: '/', label: '首页' },
-  { href: '/articles/', label: '文章' },
-  { href: '/notes/', label: '日常' },
+  { href: '/gallery/', label: '图库' },
   { href: '/about/', label: '关于' },
 ];
 const isActive = (href: string) => href === '/' ? path === '/' : path.startsWith(href);
 ---
 
 <header class="site-header" data-site-header>
-  <div class="site-header__inner shell">
-    <a class="wordmark" href="/" aria-label={`${siteConfig.wordmark}首页`} data-astro-prefetch>
-      <img src={siteConfig.avatar} alt="" width="300" height="300" />
-      <span>{siteConfig.wordmark}</span>
-    </a>
+  <a class="site-identity" href="/" aria-label={`${siteConfig.wordmark}首页`} data-astro-prefetch>
+    <img src={siteConfig.avatar} alt="" width="300" height="300" />
+    <span>{siteConfig.wordmark}</span>
+  </a>
 
-    <nav class="desktop-nav" aria-label="主导航">
-      {links.map((link) => (
-        <a class:list={['nav-link', { active: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined} data-astro-prefetch>
-          {link.label}
-        </a>
-      ))}
-    </nav>
+  <span class="site-header__line" aria-hidden="true"></span>
 
-    <div class="nav-tools">
-      <button class="icon-button search-trigger" type="button" data-search-open aria-label="搜索文章">
-        <Icon name="ph:magnifying-glass" size={21} />
-        <span>搜索</span>
-      </button>
-      <span class="tool-divider" aria-hidden="true"></span>
-      <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="切换深色模式">
-        <span class="theme-icon theme-icon--light"><Icon name="ph:sun" size={22} /></span>
-        <span class="theme-icon theme-icon--dark"><Icon name="ph:moon-fill" size={22} /></span>
-      </button>
-      <button class="icon-button menu-trigger" type="button" data-menu-open aria-label="打开菜单">
-        <Icon name="ph:list" size={29} />
-      </button>
+  <nav class="desktop-nav" aria-label="主导航">
+    {links.map((link) => (
+      <a class:list={['nav-link', { active: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined} data-astro-prefetch>
+        {link.label}
+      </a>
+    ))}
+  </nav>
+
+  {path === '/' && (
+    <div class="sidebar-drag-hint" aria-hidden="true">
+      <Icon name="ph:hand-grabbing" size={27} />
+      <span>拖动浏览<small>DRAG TO EXPLORE</small></span>
     </div>
-  </div>
+  )}
+
+  <button class="menu-trigger" type="button" data-menu-open aria-label="打开菜单">
+    <Icon name="ph:list" size={28} />
+  </button>
 </header>
 
 <dialog class="mobile-menu" data-mobile-menu aria-labelledby="mobile-menu-title">
   <div class="mobile-menu__sheet">
     <div class="mobile-menu__top">
-      <span class="wordmark" id="mobile-menu-title">
-        <img src={siteConfig.avatar} alt="" width="300" height="300" />
-        <span>{siteConfig.wordmark}</span>
-      </span>
-      <button class="icon-button" type="button" data-menu-close aria-label="关闭菜单">
-        <Icon name="ph:x" size={29} />
-      </button>
+      <span id="mobile-menu-title">导航</span>
+      <button type="button" data-menu-close aria-label="关闭菜单"><Icon name="ph:x" size={28} /></button>
     </div>
     <nav aria-label="移动端主导航">
       {links.map((link, index) => (
