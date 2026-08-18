@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
 
 export default defineConfig({
-  site: 'https://personal-info-opal.vercel.app',
+  site: 'https://tianqy.xyz',
   prefetch: {
     prefetchAll: false,
     defaultStrategy: 'hover',

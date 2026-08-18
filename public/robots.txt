@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://personal-info-opal.vercel.app/sitemap-index.xml
+Sitemap: https://tianqy.xyz/sitemap-index.xml

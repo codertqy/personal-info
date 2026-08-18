@@ -11,7 +11,7 @@ export const siteConfig = {
   avatar: '/images/tx.webp',
   logo: '/images/logo-fang.png',
   locale: 'zh-CN',
-  url: 'https://personal-info-opal.vercel.app',
+  url: 'https://tianqy.xyz',
   socialImage: '/images/hero-editorial.webp',
   commentsEnabled: true,
   commentsRepository: 'codertqy/personal-info',
